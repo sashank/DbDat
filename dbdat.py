@@ -212,20 +212,21 @@ if __name__ == "__main__":
     SUPPORTED_DB = ('mysql', 'postgresql', 'oracle', 'mssql', 'db2', 'mongodb', 'couchdb')
 
     # parse command line arguments
-    parser = argparse.ArgumentParser(description='At minimum, the -p or -l option must be specified.')
+    parser = argparse.ArgumentParser(description='At minimum, the -p and -path or -l option must be specified.')
 
     parser.add_argument('-p', help='Specify the database profile.')
+    parser.add_argument('-path', help='Specify the path to the profile configuration file.')
     parser.add_argument('-l', help='List all database profiles.', default=False, action='store_true')
     parser.add_argument('-v', help='Verbos output.', default=False, action='store_true')
 
     arguments = parser.parse_args()
 
-    if not (arguments.l or arguments.p):
-        parser.error('Either -p or -l must be provided.')
+    if not (arguments.l or (arguments.p and arguments.path)):
+        parser.error('Either -p and -path or -l must be provided.')
 
     # read configuration
     configuration      = ConfigParser.ConfigParser()
-    configuration_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'etc', 'dbdat.conf')
+    configuration_file = arguments.path
 
     try:
         configuration.read(configuration_file)
