@@ -215,18 +215,19 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='At minimum, the -p and -path or -l option must be specified.')
 
     parser.add_argument('-p', help='Specify the database profile.')
-    parser.add_argument('-path', help='Specify the path to the profile configuration file.')
+    parser.add_argument('-inputPath', help='Specify the path to the profile configuration file.')
+    parser.add_argument('-outputPath', help='Specify the path to the report.json.')
     parser.add_argument('-l', help='List all database profiles.', default=False, action='store_true')
     parser.add_argument('-v', help='Verbos output.', default=False, action='store_true')
 
     arguments = parser.parse_args()
 
-    if not (arguments.l or (arguments.p and arguments.path)):
-        parser.error('Either -p and -path or -l must be provided.')
+    if not (arguments.l or (arguments.p and arguments.inputPath and arguments.outputPath)):
+        parser.error('Either -p, -inputPath and -outputPath or -l must be provided.')
 
     # read configuration
     configuration      = ConfigParser.ConfigParser()
-    configuration_file = arguments.path
+    configuration_file = arguments.inputPath
 
     try:
         configuration.read(configuration_file)
@@ -261,7 +262,7 @@ if __name__ == "__main__":
     scan.dbport  = configuration.get(arguments.p, 'port')
     scan.dbname  = configuration.get(arguments.p, 'database')
     scan.config  = configuration.get(arguments.p, 'configuration_file')
-    scan.report  = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'reports', 'data', 'report.json')  # todo - dynamic file naming
+    scan.report  = arguments.outputPath
 
     if 0 == len(configuration.get(arguments.p, 'privileged_account')):
         print('Warning: Attempting to connect with empty privileged_account.')
